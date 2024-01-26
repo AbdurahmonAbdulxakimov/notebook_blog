@@ -1,4 +1,5 @@
 from rest_framework import viewsets, mixins, filters
+from rest_framework import pagination
 
 from .models import FAQ, Author, ContactUs, ContactUsRequest, Category, Tag, Post
 from .serializers import AuthorSerializer, ContactUsRequestSerializer, ContactUsSerializer, FAQSerializer, CategorySerializer, TagSerializer, PostSerializer
@@ -62,21 +63,21 @@ class PostViewSet(viewsets.ReadOnlyModelViewSet):
     serializer_class = PostSerializer
     filter_backends = [filters.SearchFilter]
     search_fields = ['title', 'tag__title', 'category__title']
+    pagination_class = pagination.PageNumberPagination
+    page_size = 9
 
 
 # Posts Featured List & Retrieve
 class PostFeaturedViewSet(viewsets.ReadOnlyModelViewSet):
-    queryset = Post.objects.filter(is_featured=True)
+    queryset = Post.objects.filter(is_featured=True)[:4]
     serializer_class = PostSerializer
+    
 
 
 # Posts Popular List & Retrieve
 class PostPopularViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = Post.objects.filter(is_popular=True)
     serializer_class = PostSerializer
+    pagination_class = pagination.PageNumberPagination
+    page_size = 2
     
-
-# Posts Related to Author
-class PostsRelatedTOAuthorViewSet(viewsets.ReadOnlyModelViewSet):
-    queryset = Post.objects.all()
-    serializer_class = PostSerializer
